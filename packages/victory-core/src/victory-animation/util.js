@@ -1,5 +1,10 @@
-import { interpolate } from "d3-interpolate";
 import { isPlainObject, orderBy } from "lodash";
+
+const getInterpolate = async () => {
+  const d3Interpolate = await import("d3-interpolate");
+  return d3Interpolate.interpolate;
+};
+
 
 export const isInterpolatable = function (obj) {
   // d3 turns null into 0 and undefined into NaN, which we don't want.
@@ -77,7 +82,8 @@ export const interpolateImmediate = function (a, b, when = 0) {
  * @param {any} b - End value.
  * @returns {Function} An interpolation function.
  */
-export const interpolateFunction = function (a, b) {
+export const interpolateFunction = async function (a, b) {
+  const interpolate = await getInterpolate();
   return function (t) {
     if (t >= 1) {
       return b;
@@ -86,6 +92,8 @@ export const interpolateFunction = function (a, b) {
       /* eslint-disable no-invalid-this */
       const aval = typeof a === "function" ? a.apply(this, arguments) : a;
       const bval = typeof b === "function" ? b.apply(this, arguments) : b;
+      // Alternative
+
       return interpolate(aval, bval)(t);
     };
   };
@@ -101,7 +109,8 @@ export const interpolateFunction = function (a, b) {
  * @param {any} b - End value.
  * @returns {Function} An interpolation function.
  */
-export const interpolateObject = function (a, b) {
+export const interpolateObject = async function (a, b) {
+  const interpolate = await getInterpolate();
   const interpolateTypes = (x, y) => {
     if (x === y || !isInterpolatable(x) || !isInterpolatable(y)) {
       return interpolateImmediate(x, y);
@@ -151,7 +160,8 @@ export const interpolateObject = function (a, b) {
   };
 };
 
-export const interpolateString = function (a, b) {
+export const interpolateString = async function (a, b) {
+  const interpolate = await getInterpolate();
   const format = (val) => {
     return typeof val === "string" ? val.replace(/,/g, "") : val;
   };
@@ -182,7 +192,8 @@ export const interpolateString = function (a, b) {
  * @param {any} b - End value.
  * @returns {Function|undefined} An interpolation function, if necessary.
  */
-export const victoryInterpolator = function (a, b) {
+export const victoryInterpolator = async function (a, b) {
+  const interpolate = await getInterpolate();
   // If the values are strictly equal, or either value is not interpolatable,
   // just use either the start value `a` or end value `b` at every step, as
   // there is no reasonable in-between value.

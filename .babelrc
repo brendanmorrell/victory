@@ -3,6 +3,7 @@
   "plugins": [
     "lodash",
     "@babel/proposal-class-properties",
+    "@babel/syntax-dynamic-import",
     "@babel/transform-arrow-functions",
     "@babel/transform-block-scoping",
     "@babel/transform-classes",
